@@ -1,6 +1,5 @@
 class Player
 
-
   def play_turn(warrior)
     @warrior = warrior
     @health? @health = @health : @health = 0
@@ -10,7 +9,6 @@ class Player
         if hpdrop? || hpfull? 
           warrior.walk!(@direction)
         else
-          flip_directions
           warrior.rest!
         end
       else
@@ -18,8 +16,7 @@ class Player
           warrior.rescue!(@direction)
         else
           if hpdrop? && hurt?
-            @direction = :backward
-            warrior.walk!(@direction)
+            warrior.pivot!
           else
             warrior.attack!(@direction)
           end
@@ -38,7 +35,7 @@ class Player
   end
 
   def alone?
-    if @warrior.feel(@direction).to_s == "wall" then
+    if @warrior.feel(@direction).wall? then
      flip_directions
      return true
    end
@@ -50,7 +47,7 @@ class Player
   end
 
   def hurt?
-    @warrior.health < 8
+    @warrior.health < 6
   end
 
   def hpfull?
