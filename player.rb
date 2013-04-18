@@ -3,7 +3,7 @@ class Player
   def play_turn(warrior)
     @warrior = warrior
     @health ? @health = @health : @health = 0
-    @direction ? @direction = @direction : @direction = :backward
+    @direction ? @direction = @direction : @direction = :forward
 
     if alone?
       if hpdrop? || hpfull?
@@ -13,7 +13,11 @@ class Player
           warrior.walk!(@direction)
         end
       else
-        warrior.rest!
+        if !warrior.look.to_s.include?('Captive') && feel_wizard?
+          warrior.shoot!
+        else
+          warrior.rest!
+        end
       end
     else
       if feel_captive?
@@ -55,7 +59,7 @@ class Player
   end
 
   def hurt?
-    @warrior.health < 6
+    @warrior.health < 4
   end
 
   def hpfull?
