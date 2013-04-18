@@ -1,19 +1,25 @@
 class Player
+  attr_accessor  :last_turn_health
+
+  def initialize
+    @last_turn_health = 0
+  end
 
   def play_turn(warrior)
     @warrior = warrior
-    @health ? @health = @health : @health = 0
     @direction ? @direction = @direction : @direction = :forward
 
+    look_captive_direction?
+
     if alone?
-      if hpdrop? || hpfull?
-        if !warrior.look.to_s.include?('Captive') && feel_wizard?
+      if hpdrop? || hpfull? || !look_enemy?
+        if !warrior.look.to_s.include?('Captive') && feel_ranger? && !hurt?
           warrior.shoot!
         else
           warrior.walk!(@direction)
         end
       else
-        if !warrior.look.to_s.include?('Captive') && feel_wizard?
+        if !warrior.look.to_s.include?('Captive') && feel_ranger?
           warrior.shoot!
         else
           warrior.rest!
@@ -24,14 +30,15 @@ class Player
         warrior.rescue!(@direction)
       else
         if hpdrop? && hurt?
-          warrior.pivot!
+          flip_directions
+          warrior.walk!
         else
           warrior.attack!(@direction)
         end
       end
     end
 
-    @health = warrior.health
+    @last_turn_health = warrior.health
   end
 
   def flip_directions
@@ -50,8 +57,12 @@ class Player
     @warrior.feel(@direction).empty?
   end
 
-  def feel_wizard?
-    @warrior.look.to_s.include?('Wizard')
+  def feel_ranger?
+    @warrior.look.to_s.include?('Wizard') || @warrior.look.to_s.include?('Archer')
+  end
+
+  def feel_sludge?
+    @warrior.look.to_s.include?('Sludge')
   end
 
   def feel_captive?
@@ -59,7 +70,7 @@ class Player
   end
 
   def hurt?
-    @warrior.health < 4
+    @warrior.health < 5
   end
 
   def hpfull?
@@ -67,7 +78,20 @@ class Player
   end
 
   def hpdrop?
-    @health > @warrior.health
+    @last_turn_health > @warrior.health
+  end
+
+  def look_captive_direction?
+    i = 0
+    loop do
+      flip_directions
+      i+=1
+      break if @warrior.look(@direction).to_s.include?('Captive') || i > 1
+    end
+  end
+
+  def look_enemy?
+    feel_ranger? || feel_sludge? || hurt?
   end
 
 end
