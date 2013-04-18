@@ -1,15 +1,19 @@
 class Player
   def play_turn(warrior)
     @warrior = warrior
+    @health? @health = @health : @health = 0
+
     if alone? 
-      if hurt?
-        warrior.rest!
-      else
+      if hpdrop? || hpfull? 
         warrior.walk!
+      else
+        warrior.rest!
       end
     else
       warrior.attack!
     end
+
+    @health = warrior.health
   end
 
   def alone?
@@ -20,5 +24,12 @@ class Player
     @warrior.health < 20
   end
 
+  def hpfull?
+    @warrior.health == 20
+  end
+
+  def hpdrop?
+    @health > @warrior.health
+  end
 
 end
