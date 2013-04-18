@@ -9,7 +9,7 @@ class Player
     @warrior = warrior
 
     if alone?
-      do_the_stuff_when_alone?
+      do_stuff_when_alone?
     else
       warrior.attack!
     end
@@ -17,7 +17,7 @@ class Player
     @last_turns_health = warrior.health
   end
 
-  def do_the_stuff_when_alone?
+  def do_stuff_when_alone?
     if hpdrop? || hpfull?
       @warrior.walk!
     else
