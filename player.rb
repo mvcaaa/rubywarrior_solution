@@ -1,23 +1,36 @@
 class Player
+  attr_accessor :last_turns_health
+
+  def initialize
+    @last_turns_health = 0
+  end
+
   def play_turn(warrior)
     @warrior = warrior
-    @health? @health = @health : @health = 0
 
-    if alone? 
-      if hpdrop? || hpfull? 
-        warrior.walk!
-      else
-        warrior.rest!
-      end
+    if alone?
+      react_to_being_alone
     else
-      if warrior.feel.captive?
-        warrior.rescue!
-      else
-        warrior.attack!
-      end
+      react_to_present_stuff
     end
 
-    @health = warrior.health
+    @last_turns_health = warrior.health
+  end
+
+  def react_to_present_stuff
+    if @warrior.feel.captive?
+      @warrior.rescue!
+    else
+      @warrior.attack!
+    end
+  end
+
+  def react_to_being_alone
+    if hpdrop? || hpfull?
+      @warrior.walk!
+    else
+      @warrior.rest!
+    end
   end
 
   def alone?
@@ -33,7 +46,7 @@ class Player
   end
 
   def hpdrop?
-    @health > @warrior.health
+    @last_turns_health > @warrior.health
   end
 
 end
