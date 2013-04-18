@@ -2,44 +2,52 @@ class Player
 
   def play_turn(warrior)
     @warrior = warrior
-    @health? @health = @health : @health = 0
+    @health ? @health = @health : @health = 0
     @direction ? @direction = @direction : @direction = :backward
 
-      if alone? 
-        if hpdrop? || hpfull? 
-          warrior.walk!(@direction)
+    if alone?
+      if hpdrop? || hpfull?
+        if !warrior.look.to_s.include?('Captive') && feel_wizard?
+          warrior.shoot!
         else
-          warrior.rest!
+          warrior.walk!(@direction)
         end
       else
-        if feel_captive?
-          warrior.rescue!(@direction)
+        warrior.rest!
+      end
+    else
+      if feel_captive?
+        warrior.rescue!(@direction)
+      else
+        if hpdrop? && hurt?
+          warrior.pivot!
         else
-          if hpdrop? && hurt?
-            warrior.pivot!
-          else
-            warrior.attack!(@direction)
-          end
+          warrior.attack!(@direction)
         end
       end
+    end
 
     @health = warrior.health
   end
-  
+
   def flip_directions
-    if @direction.to_s == "backward" then
+    if @direction.to_s == 'backward' then
       @direction = :forward
-    elsif @direction.to_s == "forward" then
-      @direction = :backward 
+    elsif @direction.to_s == 'forward' then
+      @direction = :backward
     end
   end
 
   def alone?
-    if @warrior.feel(@direction).wall? then
-     flip_directions
-     return true
-   end
-   @warrior.feel(@direction).empty?
+    if @warrior.feel(@direction).wall?
+      flip_directions
+      return true
+    end
+    @warrior.feel(@direction).empty?
+  end
+
+  def feel_wizard?
+    @warrior.look.to_s.include?('Wizard')
   end
 
   def feel_captive?
