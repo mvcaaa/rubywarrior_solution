@@ -1,32 +1,44 @@
 class Player
+  attr_accessor :last_turns_health, :direction
+
+  def initialize
+    @last_turns_health = 0
+    @direction = :backward
+  end
 
 
   def play_turn(warrior)
     @warrior = warrior
-    @health? @health = @health : @health = 0
-    @direction ? @direction = @direction : @direction = :backward
 
       if alone? 
-        if hpdrop? || hpfull? 
-          warrior.walk!(@direction)
-        else
-          flip_directions
-          warrior.rest!
-        end
+        react_to_being_alone
       else
-        if feel_captive?
-          warrior.rescue!(@direction)
-        else
-          if hpdrop? && hurt?
-            @direction = :backward
-            warrior.walk!(@direction)
-          else
-            warrior.attack!(@direction)
-          end
-        end
+        react_to_present_stuff
       end
 
-    @health = warrior.health
+    @last_turns_health = warrior.health
+  end
+
+  def react_to_present_stuff
+    if feel_captive?
+      @warrior.rescue!(@direction)
+    else
+      if hpdrop? && hurt?
+        @direction = :backward
+        @warrior.walk!(@direction)
+      else
+        @warrior.attack!(@direction)
+      end
+    end
+  end
+
+  def react_to_being_alone
+    if hpdrop? || hpfull? 
+      @warrior.walk!(@direction)
+    else
+      flip_directions
+      @warrior.rest!
+    end
   end
   
   def flip_directions
@@ -58,7 +70,7 @@ class Player
   end
 
   def hpdrop?
-    @health > @warrior.health
+    @last_turns_health > @warrior.health
   end
 
 end
