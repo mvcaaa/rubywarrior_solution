@@ -10,7 +10,11 @@ class Player
         warrior.rest!
       end
     else
-      warrior.attack!
+      if warrior.feel.captive?
+        warrior.rescue!
+      else
+        warrior.attack!
+      end
     end
 
     @health = warrior.health
