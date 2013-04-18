@@ -2,7 +2,11 @@ class Player
   def play_turn(warrior)
     @warrior = warrior
     if alone? 
-      warrior.walk!
+      if hurt?
+        warrior.rest!
+      else
+        warrior.walk!
+      end
     else
       warrior.attack!
     end
@@ -11,5 +15,10 @@ class Player
   def alone?
     @warrior.feel.empty?
   end
+
+  def hurt?
+    @warrior.health < 20
+  end
+
 
 end
